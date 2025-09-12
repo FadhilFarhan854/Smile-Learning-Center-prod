@@ -44,7 +44,7 @@ class ModulController extends Controller
         $modul->level = $request->level;
         $modul->save();
 
-        return redirect('modul')->with('status', 'Modul Berhasil Ditambahkan');
+        return redirect('/modul/create')->with('status', 'Modul Berhasil Ditambahkan');
     }
 
     /**
