@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Models\Additional;
 use App\Exports\OrderExport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
@@ -174,214 +176,101 @@ $siswa = $siswaQuery->paginate(10)->appends($request->except('page'));
     */
     public function store(Request $request)
     {
-        //dd($request->all());
-        $siswa_id = $request->siswa;
-        
-        $errorMessages = $this->checkLastLevel($siswa_id, $request->modul_baca, $request->modul_tulis, $request->modul_hitung, $request->modul_sd, $request->english, $request->iqro, $request->daftar, $request->lain, $request->verbal, $request->sempoa, $request->iq, $request->aritmatika, $request->juara, $request->ortu, $request->cryon);
-        
-        if (!empty($errorMessages)) {
-            // Redirect back with error messages
-            return redirect()->back()->with($errorMessages);
-        }
-        
-        
-        if ($request->modul_baca != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'baca'],
-                ['modul_id' => $request->modul_baca, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'baca'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
-        
-        if ($request->modul_tulis != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'tulis'],
-                ['modul_id' => $request->modul_tulis, 'level' => $request->level, 'status' => $request->status]
-            );
-        }else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'tulis'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
-        
-        if ($request->modul_hitung != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'hitung'],
-                ['modul_id' => $request->modul_hitung, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'hitung'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
-        
-        if ($request->modul_sd != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'modul SD'],
-                ['modul_id' => $request->modul_sd, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'modul SD'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
-        
-        if ($request->english != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'english'],
-                ['modul_id' => $request->english, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'english'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
-        
-        if ($request->iqro != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'iqro'],
-                ['modul_id' => $request->iqro, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'iqro'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
+        try {
+            // Log incoming request untuk debugging
+            Log::info('Order store method called', [
+                'request_data' => $request->all(),
+                'user_id' => auth()->id()
+            ]);
 
-        if ($request->daftar != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'daftar'],
-                ['modul_id' => $request->daftar, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'iqro'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
-        
-        if ($request->lain != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'lain'],
-                ['modul_id' => $request->lain, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'lain'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
+            // Basic validation
+            $validator = Validator::make($request->all(), [
+                'siswa' => 'required|integer|exists:siswas,id',
+                'month' => 'required|numeric|min:1|max:12',
+                'tahun' => 'required|numeric|min:2020|max:2030',
+                'level' => 'required|integer|min:1',
+                'status' => 'required|string'
+            ]);
 
-        if ($request->verbal != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'verbal'],
-                ['modul_id' => $request->verbal, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'verbal'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
+            if ($validator->fails()) {
+                Log::error('Order validation failed', $validator->errors()->toArray());
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
-        if ($request->sempoa != null) {
+            $siswa_id = $request->siswa;
             
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'sempoa'],
-                ['modul_id' => $request->sempoa, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'sempoa'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
+            // Check last level validation
+            $errorMessages = $this->checkLastLevel($siswa_id, $request->modul_baca, $request->modul_tulis, $request->modul_hitung, $request->modul_sd, $request->english, $request->iqro, $request->daftar, $request->lain, $request->verbal, $request->sempoa, $request->iq, $request->aritmatika, $request->juara, $request->ortu, $request->cryon);
+            
+            if (!empty($errorMessages)) {
+                Log::warning('Order level validation failed', $errorMessages);
+                return redirect()->back()->with($errorMessages);
+            }
 
-        if ($request->iq != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'iq'],
-                ['modul_id' => $request->iq, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'iq'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
+            // Define modul categories untuk mempermudah maintenance
+            $modulCategories = [
+                'baca' => $request->modul_baca,
+                'tulis' => $request->modul_tulis,
+                'hitung' => $request->modul_hitung,
+                'modul SD' => $request->modul_sd,
+                'english' => $request->english,
+                'iqro' => $request->iqro,
+                'daftar' => $request->daftar,
+                'lain' => $request->lain,
+                'verbal' => $request->verbal,
+                'sempoa' => $request->sempoa,
+                'iq' => $request->iq,
+                'aritmatika' => $request->aritmatika,
+                'juara' => $request->juara,
+                'ortu' => $request->ortu,
+                'cryon' => $request->cryon
+            ];
 
-        if ($request->aritmatika != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'aritmatika'],
-                ['modul_id' => $request->aritmatika, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'aritmatika'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
+            $createdOrders = [];
 
-        if ($request->juara != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'juara'],
-                ['modul_id' => $request->juara, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'juara'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
+            // Process each category
+            foreach ($modulCategories as $kategori => $modulId) {
+                $orderData = [
+                    'siswa_id' => $request->siswa,
+                    'bulan' => (int) $request->month,
+                    'tahun' => (int) $request->tahun,
+                    'kategori' => $kategori
+                ];
 
-        if ($request->ortu != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'ortu'],
-                ['modul_id' => $request->ortu, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'ortu'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
+                $updateData = [
+                    'modul_id' => $modulId,
+                    'level' => $request->level,
+                    'status' => $request->status
+                ];
 
-        if ($request->cryon != null) {
+                $order = Order::updateOrCreate($orderData, $updateData);
+                $createdOrders[] = $order->id;
+
+                Log::info("Order processed for category: {$kategori}", [
+                    'order_id' => $order->id,
+                    'modul_id' => $modulId,
+                    'created' => $order->wasRecentlyCreated
+                ]);
+            }
+
+            Log::info('All orders processed successfully', [
+                'siswa_id' => $siswa_id,
+                'total_orders' => count($createdOrders),
+                'order_ids' => $createdOrders
+            ]);
             
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'cryon'],
-                ['modul_id' => $request->cryon, 'level' => $request->level, 'status' => $request->status]
-            );
-        } else {
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'cryon'],
-                ['modul_id' => null, 'level' => $request->level, 'status' => $request->status]
-            );
+            return redirect('order')->with('status', 'Data Berhasil Disubmit');
+
+        } catch (\Exception $e) {
+            Log::error('Error in order store method', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal menyimpan data order: ' . $e->getMessage());
         }
-        
-        
-        return redirect('order')->with('status', 'Data Berhasil Disubmit');
     }
     
     /**
@@ -426,138 +315,134 @@ $siswa = $siswaQuery->paginate(10)->appends($request->except('page'));
     */
     public function update(Request $request, string $id)
     {
-        //dd($request->all());
-        $siswa_id = $request->siswa;
-        
-        $errorMessages = $this->checkLastLevel($siswa_id, $request->modul_baca, $request->modul_tulis, $request->modul_hitung, $request->modul_sd, $request->english, $request->iqro, $request->daftar, $request->lain, $request->verbal, $request->sempoa, $request->iq, $request->aritmatika, $request->juara, $request->ortu, $request->cryon);
-        
-        if (!empty($errorMessages)) {
-            // Redirect back with error messages
-            return redirect()->back()->with($errorMessages);
+        try {
+            // Validate the incoming request
+            $validator = Validator::make($request->all(), [
+                'siswa' => 'required|exists:siswas,id',
+                'month' => 'required|numeric|between:1,12',
+                'tahun' => 'required|numeric|min:2020',
+                'level' => 'required|numeric|min:1',
+                'status' => 'required|in:aktif,pending,selesai',
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('OrderController update validation failed', [
+                    'errors' => $validator->errors()->toArray(),
+                    'request_data' => $request->all()
+                ]);
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput()
+                    ->with('error', 'Data tidak valid. Silakan periksa kembali.');
+            }
+
+            $siswa_id = $request->siswa;
+            
+            // Check last level validation
+            $errorMessages = $this->checkLastLevel(
+                $siswa_id, 
+                $request->modul_baca, 
+                $request->modul_tulis, 
+                $request->modul_hitung, 
+                $request->modul_sd, 
+                $request->english, 
+                $request->iqro, 
+                $request->daftar, 
+                $request->lain, 
+                $request->verbal, 
+                $request->sempoa, 
+                $request->iq, 
+                $request->aritmatika, 
+                $request->juara, 
+                $request->ortu, 
+                $request->cryon
+            );
+            
+            if (!empty($errorMessages)) {
+                Log::warning('OrderController update level validation failed', [
+                    'siswa_id' => $siswa_id,
+                    'errors' => $errorMessages
+                ]);
+                return redirect()->back()->with($errorMessages);
+            }
+            
+            // Define module categories mapping
+            $modulCategories = [
+                'modul_baca' => 'baca',
+                'modul_tulis' => 'tulis',
+                'modul_hitung' => 'hitung',
+                'modul_sd' => 'modul SD',
+                'english' => 'english',
+                'iqro' => 'iqro',
+                'daftar' => 'daftar',
+                'lain' => 'lain',
+                'verbal' => 'verbal',
+                'sempoa' => 'sempoa',
+                'iq' => 'iq',
+                'aritmatika' => 'aritmatika',
+                'juara' => 'juara',
+                'ortu' => 'ortu',
+                'cryon' => 'cryon'
+            ];
+            
+            $updatedCount = 0;
+            
+            // Process each module category
+            foreach ($modulCategories as $requestField => $category) {
+                if ($request->$requestField != null) {
+                    Log::info("OrderController update processing category: {$category}", [
+                        'siswa_id' => $siswa_id,
+                        'modul_id' => $request->$requestField,
+                        'bulan' => $request->month,
+                        'tahun' => $request->tahun,
+                        'level' => $request->level,
+                        'status' => $request->status
+                    ]);
+                    
+                    $order = Order::updateOrCreate(
+                        [
+                            'siswa_id' => $request->siswa, 
+                            'bulan' => $request->month, 
+                            'tahun' => $request->tahun, 
+                            'kategori' => $category
+                        ],
+                        [
+                            'modul_id' => $request->$requestField, 
+                            'level' => $request->level, 
+                            'status' => $request->status
+                        ]
+                    );
+                    
+                    $updatedCount++;
+                    
+                    Log::info("OrderController update successful for category: {$category}", [
+                        'order_id' => $order->id,
+                        'siswa_id' => $siswa_id,
+                        'was_recently_created' => $order->wasRecentlyCreated
+                    ]);
+                }
+            }
+            
+            Log::info('OrderController update completed successfully', [
+                'siswa_id' => $siswa_id,
+                'updated_categories_count' => $updatedCount,
+                'bulan' => $request->month,
+                'tahun' => $request->tahun
+            ]);
+            
+            return redirect('order')->with('status', 'Data Berhasil Diperbarui');
+            
+        } catch (Exception $e) {
+            Log::error('OrderController update exception', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.');
         }
-        
-        
-        if ($request->modul_baca != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'baca'],
-                ['modul_id' => $request->modul_baca, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-        
-        if ($request->modul_tulis != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'tulis'],
-                ['modul_id' => $request->modul_tulis, 'level' => $request->level, 'status' => $request->status]
-            );
-        }
-        
-        if ($request->modul_hitung != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'hitung'],
-                ['modul_id' => $request->modul_hitung, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-        
-        if ($request->modul_sd != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'modul SD'],
-                ['modul_id' => $request->modul_sd, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-        
-        if ($request->english != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'english'],
-                ['modul_id' => $request->english, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-        
-        if ($request->iqro != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'iqro'],
-                ['modul_id' => $request->iqro, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-
-        if ($request->daftar != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'daftar'],
-                ['modul_id' => $request->daftar, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-        
-        if ($request->lain != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'lain'],
-                ['modul_id' => $request->lain, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-
-        if ($request->verbal != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'verbal'],
-                ['modul_id' => $request->verbal, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-
-        if ($request->sempoa != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'sempoa'],
-                ['modul_id' => $request->sempoa, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-        if ($request->iq != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'iq'],
-                ['modul_id' => $request->iq, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-
-        if ($request->aritmatika != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'aritmatika'],
-                ['modul_id' => $request->aritmatika, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-
-        if ($request->juara != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'juara'],
-                ['modul_id' => $request->juara, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-
-        if ($request->ortu != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'ortu'],
-                ['modul_id' => $request->ortu, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-
-        if ($request->cryon != null) {
-            
-            $order = Order::updateOrCreate(
-                ['siswa_id' => $request->siswa, 'bulan' => $request->month, 'tahun' => $request->tahun, 'kategori' => 'cryon'],
-                ['modul_id' => $request->cryon, 'level' => $request->level, 'status' => $request->status]
-            );
-        } 
-        
-        
-        return redirect('order')->with('status', 'Data Berhasil Disubmit');
     }
     
     /**

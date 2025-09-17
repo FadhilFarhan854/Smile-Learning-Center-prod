@@ -41,7 +41,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$baca->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="modul_baca" id="input-baca" value="{{null}}">
+                        <input type="hidden" name="modul_baca" id="input-baca" value="{{$baca->modul_id ?? null}}">
                         @if (session('error-baca-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-baca-'.$order->siswa_id)}}
@@ -58,7 +58,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$tulis->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="modul_tulis" id="input-tulis" value="{{null}}">
+                        <input type="hidden" name="modul_tulis" id="input-tulis" value="{{$tulis->modul_id ?? null}}">
                         @if (session('error-tulis-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-tulis-'.$order->siswa_id)}}
@@ -74,7 +74,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$hitung->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="modul_hitung" id="input-hitung" value="{{null}}">
+                        <input type="hidden" name="modul_hitung" id="input-hitung" value="{{$hitung->modul_id ?? null}}">
                         @if (session('error-hitung-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-hitung-'.$order->siswa_id)}}
@@ -90,7 +90,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$modul_sd->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="modul_sd" id="input-sd" value="{{null}}">
+                        <input type="hidden" name="modul_sd" id="input-sd" value="{{$modul_sd->modul_id ?? null}}">
                         @if (session('error-sd-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-sd-'.$order->siswa_id)}}
@@ -106,7 +106,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$english->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="english" id="input-english" value="{{null}}">
+                        <input type="hidden" name="english" id="input-english" value="{{$english->modul_id ?? null}}">
                         @if (session('error-english-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-english-'.$order->siswa_id)}}
@@ -122,7 +122,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$iqro->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="iqro" id="input-iqro" value="{{null}}">
+                        <input type="hidden" name="iqro" id="input-iqro" value="{{$iqro->modul_id ?? null}}">
                         @if (session('error-iqro-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-iqro-'.$order->siswa_id)}}
@@ -138,7 +138,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$daftar?->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="daftar" id="input-daftar" value="{{null}}">
+                        <input type="hidden" name="daftar" id="input-daftar" value="{{$daftar?->modul_id ?? null}}">
                         @if (session('error-daftar-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-daftar-'.$order->siswa_id)}}
@@ -154,7 +154,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$lain->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="lain" id="input-lain" value="{{null}}">
+                        <input type="hidden" name="lain" id="input-lain" value="{{$lain->modul_id ?? null}}">
                         @if (session('error-lain-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-lain-'.$order->siswa_id)}}
@@ -170,7 +170,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$verbal->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="verbal" id="input-verbal" value="{{null}}">
+                        <input type="hidden" name="verbal" id="input-verbal" value="{{$verbal->modul_id ?? null}}">
                         @if (session('error-verbal-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-verbal-'.$order->siswa_id)}}
@@ -186,7 +186,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$sempoa->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="sempoa" id="input-sempoa" value="{{null}}">
+                        <input type="hidden" name="sempoa" id="input-sempoa" value="{{$sempoa->modul_id ?? null}}">
                         @if (session('error-sempoa-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-sempoa-'.$order->siswa_id)}}
@@ -202,7 +202,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$iq->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="iq" id="input-iq" value="{{null}}">
+                        <input type="hidden" name="iq" id="input-iq" value="{{$iq->modul_id ?? null}}">
                         @if (session('error-iq-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-iq-'.$order->siswa_id)}}
@@ -218,7 +218,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$aritmatika->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="aritmatika" id="input-aritmatika" value="{{null}}">
+                        <input type="hidden" name="aritmatika" id="input-aritmatika" value="{{$aritmatika->modul_id ?? null}}">
                         @if (session('error-aritmatika-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-aritmatika-'.$order->siswa_id)}}
@@ -234,7 +234,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$juara->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="juara" id="input-juara" value="{{null}}">
+                        <input type="hidden" name="juara" id="input-juara" value="{{$juara->modul_id ?? null}}">
                         @if (session('error-juara-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-juara-'.$order->siswa_id)}}
@@ -250,7 +250,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$ortu->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="ortu" id="input-ortu" value="{{null}}">
+                        <input type="hidden" name="ortu" id="input-ortu" value="{{$ortu->modul_id ?? null}}">
                         @if (session('error-ortu-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-ortu-'.$order->siswa_id)}}
@@ -266,7 +266,7 @@
                             <option value="{{$md->id}}" style="{{$md->countStock() <= 0 ?'display:none' : ''}}" {{$cryon->modul_id == $md->id ? 'selected' : ''}}>Level {{$md->level}} : {{$md->nama}}</option>
                             @endforeach
                         </select>
-                        <input type="hidden" name="cryon" id="input-cryon" value="{{null}}">
+                        <input type="hidden" name="cryon" id="input-cryon" value="{{$cryon->modul_id ?? null}}">
                         @if (session('error-cryon-'.$order->siswa_id))
                         <div class="alert alert-danger p-1">
                             {{session('error-cryon-'.$order->siswa_id)}}

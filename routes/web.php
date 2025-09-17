@@ -102,3 +102,8 @@ Route::get('/test-modul', function() {
     return view('test_modul');
 })->middleware('auth');
 
+// Test route for order
+Route::get('/test-order', function() {
+    return view('test_order');
+})->middleware('auth');
+
