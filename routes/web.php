@@ -93,3 +93,12 @@ Route::middleware(['auth', 'checkrole:administrator 1,administrator 2,admin,moti
 
 Auth::routes();
 
+// Temporary test routes
+Route::get('/test-absen', function() {
+    return view('test_absen');
+})->middleware('auth');
+
+Route::get('/test-modul', function() {
+    return view('test_modul');
+})->middleware('auth');
+

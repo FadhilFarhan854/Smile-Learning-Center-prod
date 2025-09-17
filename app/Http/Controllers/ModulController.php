@@ -6,6 +6,8 @@ use App\Models\Modul;
 use App\Models\Order;
 use App\Exports\ModulExport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ModulController extends Controller
@@ -37,14 +39,54 @@ class ModulController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request->all());
-        $modul = new Modul;
-        $modul->nama = $request->nama;
-        $modul->kategori = $request->kategori;
-        $modul->level = $request->level;
-        $modul->save();
+        try {
+            // Log untuk debugging
+            Log::info('Modul store method called', [
+                'request_data' => $request->all(),
+                'user_id' => auth()->id()
+            ]);
 
-        return redirect('/modul/create')->with('status', 'Modul Berhasil Ditambahkan');
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'nama' => 'required|string|max:255',
+                'kategori' => 'required|string|max:100',
+                'level' => 'required|integer|min:1|max:10'
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('Modul validation failed', $validator->errors()->toArray());
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            Log::info('Attempting to save modul', [
+                'nama' => $request->nama,
+                'kategori' => $request->kategori,
+                'level' => $request->level
+            ]);
+
+            // Create new modul using mass assignment
+            $modul = Modul::create([
+                'nama' => $request->nama,
+                'kategori' => $request->kategori,
+                'level' => $request->level,
+                'status' => 'tersedia', // Set default status
+                'stock' => 0 // Set default stock
+            ]);
+
+            Log::info('Modul saved successfully', ['modul_id' => $modul->id]);
+
+            return redirect('/modul/create')->with('status', 'Modul Berhasil Ditambahkan');
+
+        } catch (\Exception $e) {
+            Log::error('Error in modul store method', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal menyimpan modul: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -70,13 +112,55 @@ class ModulController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $modul = Modul::findorfail($id);
-        $modul->nama = $request->nama;
-        $modul->kategori = $request->kategori;
-        $modul->level = $request->level;
-        $modul->save();
+        try {
+            // Log untuk debugging
+            Log::info('Modul update method called', [
+                'modul_id' => $id,
+                'request_data' => $request->all(),
+                'user_id' => auth()->id()
+            ]);
 
-        return redirect('modul')->with('status', 'Modul Berhasil Diubah');
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'nama' => 'required|string|max:255',
+                'kategori' => 'required|string|max:100',
+                'level' => 'required|integer|min:1|max:10'
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('Modul update validation failed', $validator->errors()->toArray());
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $modul = Modul::findOrFail($id);
+            
+            Log::info('Attempting to update modul', [
+                'modul_id' => $id,
+                'old_data' => $modul->toArray(),
+                'new_data' => $request->only(['nama', 'kategori', 'level'])
+            ]);
+
+            // Update modul using mass assignment
+            $modul->update([
+                'nama' => $request->nama,
+                'kategori' => $request->kategori,
+                'level' => $request->level
+            ]);
+
+            Log::info('Modul updated successfully', ['modul_id' => $modul->id]);
+
+            return redirect('modul')->with('status', 'Modul Berhasil Diubah');
+
+        } catch (\Exception $e) {
+            Log::error('Error in modul update method', [
+                'modul_id' => $id,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal mengubah modul: ' . $e->getMessage());
+        }
     }
 
     /**

@@ -9,6 +9,8 @@ use App\Exports\AbsenExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AbsenController extends Controller
@@ -112,31 +114,78 @@ class AbsenController extends Controller
     */
     public function store(Request $request)
     {
-        // Validate the request
-        $request->validate([
-            'siswa_id' => 'required|integer|exists:siswas,id',
-            'year' => 'required|integer',
-            'month' => 'required|integer|min:1|max:12',
-            'date' => 'required|integer|min:1|max:31',
-            'status' => 'required|string',
-            'pertemuan' => 'nullable|string'
-        ]);
-        
-        $tanggal = Carbon::createFromDate($request->year, $request->month, $request->date)->format('Y-m-d');
-        
-        // Use updateOrCreate for better performance and cleaner code
-        Absen::updateOrCreate(
-            [
+        try {
+            // Log untuk debugging
+            Log::info('Absen store method called', [
+                'request_data' => $request->all(),
+                'user_id' => auth()->id()
+            ]);
+
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'siswa_id' => 'required|integer|exists:siswas,id',
+                'year' => 'required|numeric|min:2020|max:2030',
+                'month' => 'required|numeric|min:1|max:12',
+                'date' => 'required|numeric|min:1|max:31',
+                'status' => 'required|string',
+                'pertemuan' => 'nullable|string'
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('Validation failed', $validator->errors()->toArray());
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            // Convert input to integers untuk memastikan format yang benar
+            $year = (int) $request->year;
+            $month = (int) $request->month;
+            $date = (int) $request->date;
+            
+            $tanggal = Carbon::createFromDate($year, $month, $date)->format('Y-m-d');
+            
+            Log::info('Attempting to save absen', [
                 'siswa_id' => $request->siswa_id,
-                'tanggal_absen' => $tanggal
-            ],
-            [
+                'tanggal_absen' => $tanggal,
                 'status' => $request->status,
-                'pertemuan' => $request->pertemuan
-            ]
-        );
-        
-        return redirect()->back()->with('success', 'Data absen berhasil disimpan');
+                'pertemuan' => $request->pertemuan,
+                'original_inputs' => [
+                    'year' => $request->year,
+                    'month' => $request->month, 
+                    'date' => $request->date
+                ],
+                'converted_inputs' => [
+                    'year' => $year,
+                    'month' => $month,
+                    'date' => $date
+                ]
+            ]);
+
+            // Use updateOrCreate for better performance and cleaner code
+            $absen = Absen::updateOrCreate(
+                [
+                    'siswa_id' => $request->siswa_id,
+                    'tanggal_absen' => $tanggal
+                ],
+                [
+                    'status' => $request->status,
+                    'pertemuan' => $request->pertemuan
+                ]
+            );
+
+            Log::info('Absen saved successfully', ['absen_id' => $absen->id]);
+            
+            return redirect()->back()->with('success', 'Data absen berhasil disimpan');
+
+        } catch (\Exception $e) {
+            Log::error('Error in store method', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal menyimpan data absen: ' . $e->getMessage());
+        }
     }
     
     /**
@@ -173,38 +222,82 @@ class AbsenController extends Controller
 
     public function inputNote(Request $request)
     {
-        // Add validation for better security and performance
-        $request->validate([
-            'siswa_id' => 'required|integer|exists:siswas,id',
-            'month' => 'required|integer|min:1|max:12',
-            'year' => 'required|integer|min:2020|max:2100',
-            'keterangan' => 'required|string|max:1000'
-        ]);
+        try {
+            // Log untuk debugging
+            Log::info('AbsenNote inputNote method called', [
+                'request_data' => $request->all(),
+                'user_id' => auth()->id()
+            ]);
 
-        AbsenNotes::updateOrCreate(
-            [
-                'siswa_id' => $request->siswa_id, 
-                'bulan' => $request->month, 
-                'tahun' => $request->year
-            ],
-            ['keterangan' => $request->keterangan]
-        );
+            // Add validation for better security and performance
+            $validator = Validator::make($request->all(), [
+                'siswa_id' => 'required|integer|exists:siswas,id',
+                'month' => 'required|numeric|min:1|max:12',
+                'year' => 'required|numeric|min:2020|max:2100',
+                'keterangan' => 'required|string|max:1000'
+            ]);
 
-        return redirect('absen')->with('success', 'Input Note Berhasil');
+            if ($validator->fails()) {
+                Log::error('AbsenNote validation failed', $validator->errors()->toArray());
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            AbsenNotes::updateOrCreate(
+                [
+                    'siswa_id' => $request->siswa_id, 
+                    'bulan' => (int) $request->month, 
+                    'tahun' => (int) $request->year
+                ],
+                ['keterangan' => $request->keterangan]
+            );
+
+            Log::info('AbsenNote saved successfully');
+            return redirect('absen')->with('success', 'Input Note Berhasil');
+
+        } catch (\Exception $e) {
+            Log::error('Error in AbsenNote inputNote method', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal menyimpan note: ' . $e->getMessage());
+        }
     }
 
     public function deleteNote(Request $request)
     {
-        // Add validation and error handling
-        $request->validate([
-            'id' => 'required|integer|exists:absen_notes,id'
-        ]);
-
         try {
+            // Log untuk debugging
+            Log::info('AbsenNote deleteNote method called', [
+                'request_data' => $request->all(),
+                'user_id' => auth()->id()
+            ]);
+
+            // Add validation and error handling
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|integer|exists:absen_notes,id'
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('AbsenNote delete validation failed', $validator->errors()->toArray());
+                return redirect()->back()->withErrors($validator);
+            }
+
             AbsenNotes::destroy($request->id);
+            
+            Log::info('AbsenNote deleted successfully', ['note_id' => $request->id]);
             return redirect('absen')->with('success', 'Hapus Note Berhasil');
+
         } catch (\Exception $e) {
-            return redirect('absen')->with('error', 'Gagal menghapus note');
+            Log::error('Error in AbsenNote deleteNote method', [
+                'note_id' => $request->id ?? 'unknown',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return redirect('absen')->with('error', 'Gagal menghapus note: ' . $e->getMessage());
         }
     }
 

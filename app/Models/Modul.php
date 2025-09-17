@@ -11,6 +11,14 @@ class Modul extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'nama',
+        'kategori', 
+        'level',
+        'status',
+        'stock'
+    ];
+
     /**
      * Get all of the order for the Modul
      *
